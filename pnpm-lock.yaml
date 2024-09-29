@@ -14,6 +14,12 @@ importers:
 
   packages/cf-worker:
     dependencies:
+      '@hono/swagger-ui':
+        specifier: ^0.4.1
+        version: 0.4.1(hono@4.6.3)
+      '@hono/zod-openapi':
+        specifier: ^0.16.2
+        version: 0.16.2(hono@4.6.3)(zod@3.23.8)
       hono:
         specifier: ^4.6.3
         version: 4.6.3
@@ -73,6 +79,11 @@ packages:
 
   '@antfu/utils@0.7.10':
     resolution: {integrity: sha512-+562v9k4aI80m1+VuMHehNJWLOFjBnXn3tdOitzD0il5b7smkSBal4+a3oKiQTbrwMmN/TBUMDvbdoWDehgOww==}
+
+  '@asteasolutions/zod-to-openapi@7.1.2':
+    resolution: {integrity: sha512-tuDcV4aGAlY4eaZ8Qmf1efPL33hwJKdpCSbI6vJqXU5Wkz9IIyCrb3u3fExZyyMGzmLKcJH+CHI5UKvNBPlyjg==}
+    peerDependencies:
+      zod: ^3.20.2
 
   '@babel/code-frame@7.24.7':
     resolution: {integrity: sha512-BcYH1CVJBO9tvyIZ2jVeXgSIMvGZ2FDRvDdOIVQyuklNKSsx+eppDEBq/g47Ayw+RqNFE+URvOShmf+f/qwAlA==}
@@ -599,6 +610,24 @@ packages:
   '@fastify/busboy@2.1.1':
     resolution: {integrity: sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==}
     engines: {node: '>=14'}
+
+  '@hono/swagger-ui@0.4.1':
+    resolution: {integrity: sha512-kPaJatHffeYQ3yVkHo878hCqwfapqx54FczJVJ+eRWt8J4biyVVMIdCAJb6MyA8bcnHUoTmUpPc7OJAV1VTg2g==}
+    peerDependencies:
+      hono: '*'
+
+  '@hono/zod-openapi@0.16.2':
+    resolution: {integrity: sha512-MxlZzvHTXmOihKgIqYrEH5TysIs3Ep0PlTfmdaXe22HR0o2BULbpWW3F7W4I+2jAbt9rxLbxcs3aE2MXnIuAbw==}
+    engines: {node: '>=16.0.0'}
+    peerDependencies:
+      hono: '>=4.3.6'
+      zod: 3.*
+
+  '@hono/zod-validator@0.3.0':
+    resolution: {integrity: sha512-7XcTk3yYyk6ldrO/VuqsroE7stvDZxHJQcpATRAyha8rUxJNBPV3+6waDrARfgEqxOVlzIadm3/6sE/dPseXgQ==}
+    peerDependencies:
+      hono: '>=3.9.0'
+      zod: ^3.19.1
 
   '@jridgewell/gen-mapping@0.3.5':
     resolution: {integrity: sha512-IzL8ZoEDIBRWEzlCcRhOaCupYyN5gdIK+Q6fbFdPDg6HqX6jpkItn7DFIpW9LQzXG6Df9sA7+OKnq0qlz/GaQg==}
@@ -1220,6 +1249,9 @@ packages:
     resolution: {integrity: sha512-mnkeQ1qP5Ue2wd+aivTD3NHd/lZ96Lu0jgf0pwktLPtx6cTZiH7tyeGRRHs0zX0rbrahXPnXlUnbeXyaBBuIaw==}
     engines: {node: '>=18'}
 
+  openapi3-ts@4.4.0:
+    resolution: {integrity: sha512-9asTNB9IkKEzWMcHmVZE7Ts3kC9G7AFHfs8i7caD8HbI76gEjdkId4z/AkP83xdZsH7PLAnnbl47qZkXuxpArw==}
+
   path-browserify@1.0.1:
     resolution: {integrity: sha512-b7uo2UCUOYZcnF/3ID0lulOJi/bafxa1xPe7ZPsammBSpjSWQkjNxlt635YGS2MiR9GjvuXCtz2emr3jbsz98g==}
 
@@ -1529,6 +1561,11 @@ packages:
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
 
+  yaml@2.5.1:
+    resolution: {integrity: sha512-bLQOjaX/ADgQ20isPJRvF0iRUHIxVhYvr53Of7wGcWlO2jvtUlH5m87DsmulFVxRpNLOnI4tB6p/oh8D7kpn9Q==}
+    engines: {node: '>= 14'}
+    hasBin: true
+
   youch@3.3.3:
     resolution: {integrity: sha512-qSFXUk3UZBLfggAW3dJKg0BMblG5biqSF8M34E06o5CSsZtH92u9Hqmj2RzGiHDi64fhe83+4tENFP2DB6t6ZA==}
 
@@ -1543,6 +1580,11 @@ snapshots:
       '@jridgewell/trace-mapping': 0.3.25
 
   '@antfu/utils@0.7.10': {}
+
+  '@asteasolutions/zod-to-openapi@7.1.2(zod@3.23.8)':
+    dependencies:
+      openapi3-ts: 4.4.0
+      zod: 3.23.8
 
   '@babel/code-frame@7.24.7':
     dependencies:
@@ -1958,6 +2000,22 @@ snapshots:
     optional: true
 
   '@fastify/busboy@2.1.1': {}
+
+  '@hono/swagger-ui@0.4.1(hono@4.6.3)':
+    dependencies:
+      hono: 4.6.3
+
+  '@hono/zod-openapi@0.16.2(hono@4.6.3)(zod@3.23.8)':
+    dependencies:
+      '@asteasolutions/zod-to-openapi': 7.1.2(zod@3.23.8)
+      '@hono/zod-validator': 0.3.0(hono@4.6.3)(zod@3.23.8)
+      hono: 4.6.3
+      zod: 3.23.8
+
+  '@hono/zod-validator@0.3.0(hono@4.6.3)(zod@3.23.8)':
+    dependencies:
+      hono: 4.6.3
+      zod: 3.23.8
 
   '@jridgewell/gen-mapping@0.3.5':
     dependencies:
@@ -2596,6 +2654,10 @@ snapshots:
       is-inside-container: 1.0.0
       is-wsl: 3.1.0
 
+  openapi3-ts@4.4.0:
+    dependencies:
+      yaml: 2.5.1
+
   path-browserify@1.0.1: {}
 
   path-key@3.1.1: {}
@@ -2893,6 +2955,8 @@ snapshots:
   xxhash-wasm@1.0.2: {}
 
   yallist@3.1.1: {}
+
+  yaml@2.5.1: {}
 
   youch@3.3.3:
     dependencies:

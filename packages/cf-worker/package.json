@@ -5,6 +5,8 @@
     "deploy": "wrangler deploy --minify src/index.ts"
   },
   "dependencies": {
+    "@hono/swagger-ui": "^0.4.1",
+    "@hono/zod-openapi": "^0.16.2",
     "hono": "^4.6.3",
     "isomorphic-buffer": "npm:buffer@^6.0.3"
   },
