@@ -39,11 +39,11 @@ class SynthesisRequest {
   requestId: string;
   buffer: Buffer;
   successCallback: (buffer: Buffer) => void;
-  errorCallback: (error: string) => void;
+  errorCallback: (error: Error) => void;
   constructor(
     requestId: string,
     successCallback: (buffer: Buffer) => void,
-    errorCallback: (error: string) => void,
+    errorCallback: (error: Error) => void,
   ) {
     this.requestId = requestId;
     this.buffer = Buffer.from([]);
@@ -146,7 +146,9 @@ export class Service {
       // 服务器会自动断开空闲超过30秒的连接
       const { code, reason } = closeEvent;
       for (const [id, request] of this.requestMap) {
-        request.errorCallback(`Connection Closed for ${id}. ${reason} ${code}`);
+        request.errorCallback(
+          new Error(`Connection Closed for ${id}. ${reason} ${code}`),
+        );
       }
       this.reset();
       console.info(`Connection Closed： ${reason} ${code}`);
@@ -178,7 +180,9 @@ export class Service {
         if (this.ws) {
           this.ws.close();
           for (const [id, request] of this.requestMap) {
-            request.errorCallback(`Connection failed：${id} ${error}`);
+            request.errorCallback(
+              new Error(`Connection failed：${id} ${error}`),
+            );
           }
         } else {
           reject(`Connection failed： ${error}`);
