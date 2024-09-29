@@ -5,7 +5,7 @@ import api from "./api";
 const app = new OpenAPIHono();
 
 app.get("/", async (c) => {
-  return c.text("Hello World!");
+  return c.redirect("https://github.com/yy4382/read-aloud");
 });
 app.route("/api", api);
 
