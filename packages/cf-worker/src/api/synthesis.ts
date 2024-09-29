@@ -2,6 +2,7 @@ import { z, OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { HTTPException } from "hono/http-exception";
 import { Service, FORMAT_CONTENT_TYPE } from "../utils/synthesis";
 import retry, { RetryError } from "../utils/retry";
+import buildSsml from "../utils/buildSsml";
 type Bindings = {
   TOKEN: string;
 };
@@ -60,6 +61,7 @@ synthesis.openapi(route, async (c) => {
     pitch,
     text = "",
     format = "audio-24khz-48kbitrate-mono-mp3",
+    volume,
     token,
   } = c.req.valid("query");
 
@@ -75,8 +77,8 @@ synthesis.openapi(route, async (c) => {
   if (!FORMAT_CONTENT_TYPE.has(format)) {
     throw new HTTPException(400, { message: `无效的音频格式：${format}` });
   }
-
-  const ssml = `<speak xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xmlns:emo="http://www.w3.org/2009/10/emotionml" version="1.0" xml:lang="zh-CN"><voice name="${voiceName}"><prosody rate="${rate}%">${text}</prosody></voice></speak>`;
+  const ssml = buildSsml(text, { voiceName, pitch, rate, volume });
+  console.debug("SSML:", ssml);
   try {
     const result = await retry(
       async () => {

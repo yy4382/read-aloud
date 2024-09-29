@@ -8,11 +8,14 @@
     "@hono/swagger-ui": "^0.4.1",
     "@hono/zod-openapi": "^0.16.2",
     "hono": "^4.6.3",
-    "isomorphic-buffer": "npm:buffer@^6.0.3"
+    "isomorphic-buffer": "npm:buffer@^6.0.3",
+    "xast-util-to-xml": "^4.0.0",
+    "xastscript": "^4.0.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240529.0",
     "@types/node": "20.8.3",
+    "@types/xast": "^2.0.4",
     "wrangler": "^3.57.2"
   },
   "overrides": {
