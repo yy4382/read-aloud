@@ -8,9 +8,8 @@
   "[typescript]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
-  "cSpell.words": [
-    "ifreetime",
-    "SSML",
-    "wxxxcxx"
-  ]
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "cSpell.words": ["ifreetime", "SSML", "wxxxcxx"]
 }

@@ -1,12 +1,14 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { swaggerUI } from "@hono/swagger-ui";
+import { Home } from "./home";
 
 import api from "./api";
 const app = new OpenAPIHono();
 
 app.get("/", async (c) => {
-  return c.redirect("https://github.com/yy4382/read-aloud");
+  return c.html(<Home />);
 });
+
 app.route("/api", api);
 
 export default app;

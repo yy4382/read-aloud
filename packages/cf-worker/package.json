@@ -1,8 +1,8 @@
 {
   "name": "cf-worker",
   "scripts": {
-    "dev": "wrangler dev src/index.ts",
-    "deploy": "wrangler deploy --minify src/index.ts"
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy --minify"
   },
   "dependencies": {
     "@hono/swagger-ui": "^0.4.1",
