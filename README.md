@@ -8,6 +8,18 @@
 
 “大声朗读” (Read aloud) 是微软为一系列自家服务提供的文字转语音服务。由于大家基本上都使用的是 Edge 浏览器上的接口，所以也被时常称为 "**Edge TTS**"。
 
+## 自行部署
+
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/yy4382/read-aloud)
+
+### 环境变量
+
+在 Cloudflare 面板的当前 Workers 项目中，找到 Settings -> Variables and Secrets，即可添加环境变量。
+
+```plaintext
+TOKEN=YOUR_TOKEN # Optional
+```
+
 ## API 参考
 
 Swagger 文档：<https://readaloud.yfi.moe/api/ui>
