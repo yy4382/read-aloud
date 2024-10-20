@@ -55,6 +55,13 @@ export const Home: FC = () => (
             />
           </a>
         </p>
+        <p>
+          指南：
+          <a href="https://yfi.moe/post/deploy-with-cloudflare-btn-guide">
+            Deploy with Workers 按钮使用指南 - Yunfi
+          </a>
+        </p>
+
         <h3 id="-">环境变量</h3>
         <p>
           在 Cloudflare 面板的当前 Workers 项目中，找到 Settings -&gt; Variables
