@@ -5,6 +5,18 @@ export const Home: FC = () => (
     <head>
       <meta charSet="UTF-8" />
       <title>微软“朗读” TTS 转发器</title>
+      <meta name="description" content="微软“大声朗读”转发器，运行于 Cloudflare Workers 上，提供文字转语音服务。" />
+      
+      {/* Open Graph tags */}
+      <meta property="og:title" content="微软“朗读” TTS 转发器" />
+      <meta property="og:description" content="微软“大声朗读”转发器，运行于 Cloudflare Workers 上，提供文字转语音服务。" />
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://readaloud.yfi.moe" />
+
+      {/* Twitter Card tags */}
+      <meta name="twitter:title" content="微软“朗读” TTS 转发器" />
+      <meta name="twitter:description" content="微软“大声朗读”转发器，运行于 Cloudflare Workers 上，提供文字转语音服务。" />
+
       <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css" />
     </head>
     <body>
@@ -76,7 +88,7 @@ export const Home: FC = () => (
         </pre>
         <h2 id="api-">API 参考</h2>
         <p>
-          <a class="button" href="https://readaloud.yfi.moe/api/ui">
+          <a class="button" href="/api/ui">
             Swagger 文档
           </a>
         </p>
