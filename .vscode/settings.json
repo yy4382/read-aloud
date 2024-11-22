@@ -11,5 +11,10 @@
   "[typescriptreact]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
-  "cSpell.words": ["ifreetime", "SSML", "wxxxcxx"]
+  "cSpell.words": [
+    "ifreetime",
+    "SSML",
+    "wxxxcxx"
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
