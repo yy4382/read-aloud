@@ -1,12 +1,15 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { swaggerUI } from "@hono/swagger-ui";
-import { Home } from "./home";
 
 import api from "./api";
 const app = new OpenAPIHono();
 
 app.get("/", async (c) => {
-  return c.html(<Home />);
+  const res = await fetch(
+    "https://raw.githubusercontent.com/yy4382/read-aloud/refs/heads/main/packages/cf-worker/src/index.html",
+  );
+
+  return c.html(await res.text());
 });
 
 app.route("/api", api);
