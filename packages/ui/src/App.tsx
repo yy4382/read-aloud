@@ -9,7 +9,7 @@ function App() {
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <ApiUrlProvider>
         <SiteHeader />
-        <div className="flex flex-col gap-4 w-full mx-8 items-start justify-center">
+        <div className="flex flex-col gap-4 w-full mx-auto max-w-sm items-start justify-center">
           <ApiUrl />
           <SynthesisForm />
         </div>

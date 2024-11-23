@@ -54,7 +54,7 @@ export default function ApiUrl() {
   };
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 w-full">
       <Label>API URL</Label>
       <Input value={apiUrl} onChange={handleInputChange} />
     </div>

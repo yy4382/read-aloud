@@ -76,7 +76,7 @@ export function SynthesisForm() {
   }
 
   return (
-    <div>
+    <div className="w-full">
       <Form {...form}>
         <form className="space-y-2">
           <FormField
