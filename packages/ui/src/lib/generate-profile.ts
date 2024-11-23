@@ -54,7 +54,7 @@ export function generateProfile(
       const config = {
         _ClassName: "JxdAdvCustomTTS",
         _TTSConfigID: generateRandomString(16),
-        ttsConfigGroup: `☁️ ${new URL(apiPath).hostname}`,
+        ttsConfigGroup: `☁️ Edge@CF ${new URL(apiPath).hostname}`,
         ttsHandles: [
           {
             forGetMethod: 1,
