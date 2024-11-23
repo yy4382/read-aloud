@@ -26,7 +26,7 @@ const formSchema = z.object({
   voiceName: z.string(),
   pitch: z.string(),
   rate: z.string(),
-  text: z.string(),
+  // text: z.string(),
   format: z.string(),
   token: z.string(),
   volume: z.string(),
@@ -46,7 +46,7 @@ export function SynthesisForm() {
       voiceName: "zh-CN-XiaoxiaoNeural",
       pitch: "",
       rate: "",
-      text: "",
+      // text: "",
       format: "audio-24khz-48kbitrate-mono-mp3",
       token: "",
       volume: "",
@@ -85,7 +85,7 @@ export function SynthesisForm() {
               </FormItem>
             )}
           />
-          <FormField
+          {/* <FormField
             control={form.control}
             name="text"
             render={({ field }) => (
@@ -98,7 +98,7 @@ export function SynthesisForm() {
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
 
           <FormField
             control={form.control}
