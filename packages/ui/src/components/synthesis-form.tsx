@@ -19,7 +19,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { ApiUrlContext } from "./api-url";
 import { generateProfile } from "@/lib/generate-profile";
 
@@ -27,7 +27,7 @@ const formSchema = z.object({
   voiceName: z.string(),
   pitch: z.string(),
   rate: z.string(),
-  // text: z.string(),
+  text: z.string(),
   format: z.string(),
   token: z.string(),
   volume: z.string(),
@@ -40,6 +40,9 @@ export function SynthesisForm() {
   }
   const { apiUrl } = context;
   const { toast } = useToast();
+
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -47,7 +50,7 @@ export function SynthesisForm() {
       voiceName: "zh-CN-XiaoxiaoNeural",
       pitch: "",
       rate: "",
-      // text: "",
+      text: "",
       format: "audio-24khz-48kbitrate-mono-mp3",
       token: "",
       volume: "",
@@ -75,6 +78,28 @@ export function SynthesisForm() {
       });
   }
 
+  function tryListen(values: z.infer<typeof formSchema>) {
+    const url = new URL(apiUrl);
+    url.pathname = "/api/synthesis";
+
+    // Use for...in to set URL parameters
+    for (const key in values) {
+      const value = values[key as keyof typeof values];
+      // Set default text to "你好" if empty
+      if (key === "text" && value === "") {
+        url.searchParams.set(key, "你好");
+      } else {
+        // Only set parameter if value is not empty
+        if (value !== "") {
+          url.searchParams.set(key, value);
+        }
+      }
+    }
+
+    console.log(url.toString());
+    setAudioUrl(url.toString());
+  }
+
   return (
     <div className="w-full">
       <Form {...form}>
@@ -95,7 +120,7 @@ export function SynthesisForm() {
               </FormItem>
             )}
           />
-          {/* <FormField
+          <FormField
             control={form.control}
             name="text"
             render={({ field }) => (
@@ -108,7 +133,7 @@ export function SynthesisForm() {
                 <FormMessage />
               </FormItem>
             )}
-          /> */}
+          />
 
           <FormField
             control={form.control}
@@ -204,12 +229,28 @@ export function SynthesisForm() {
             >
               Copy SourceReader
             </Button>
+            <Button onClick={form.handleSubmit((v) => tryListen(v))}>
+              Try Listen
+            </Button>
             <Button type="reset" onClick={() => form.reset()}>
               Reset
             </Button>
           </section>
         </form>
       </Form>
+      <AudioPlayer url={audioUrl} />
     </div>
+  );
+}
+
+function AudioPlayer({ url }: { url: string | null }) {
+  return (
+    <>
+      {url && (
+        <audio src={url} controls>
+          <track kind="captions" />
+        </audio>
+      )}
+    </>
   );
 }
