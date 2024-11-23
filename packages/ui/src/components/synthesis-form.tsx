@@ -2,6 +2,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import {
   Form,
   FormControl,
@@ -38,7 +39,7 @@ export function SynthesisForm() {
     throw new Error("SynthesisForm must be used within an ApiUrlProvider");
   }
   const { apiUrl } = context;
-
+  const { toast } = useToast();
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -60,9 +61,18 @@ export function SynthesisForm() {
   ) {
     console.log(values);
     const result = generateProfile(type, apiUrl, values);
-    navigator.clipboard.writeText(
-      typeof result === "string" ? result : JSON.stringify(result),
-    );
+    navigator.clipboard
+      .writeText(typeof result === "string" ? result : JSON.stringify(result))
+      .then(() => {
+        toast({
+          title: "已复制到剪贴板",
+        });
+      })
+      .catch(() => {
+        toast({
+          title: "复制失败",
+        });
+      });
   }
 
   return (
