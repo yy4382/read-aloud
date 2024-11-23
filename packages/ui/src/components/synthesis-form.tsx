@@ -24,12 +24,12 @@ import { generateProfile } from "@/lib/generate-profile";
 
 const formSchema = z.object({
   voiceName: z.string(),
-  pitch: z.string().optional(),
-  rate: z.string().optional(),
-  text: z.string().optional(),
-  format: z.string().optional(),
-  token: z.string().optional(),
-  volume: z.string().optional(),
+  pitch: z.string(),
+  rate: z.string(),
+  text: z.string(),
+  format: z.string(),
+  token: z.string(),
+  volume: z.string(),
 });
 
 export function SynthesisForm() {
@@ -44,12 +44,12 @@ export function SynthesisForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       voiceName: "zh-CN-XiaoxiaoNeural",
-      pitch: undefined,
-      rate: undefined,
+      pitch: "",
+      rate: "",
       text: "",
       format: "audio-24khz-48kbitrate-mono-mp3",
-      token: undefined,
-      volume: undefined,
+      token: "",
+      volume: "",
     },
   });
 
@@ -58,8 +58,10 @@ export function SynthesisForm() {
     values: z.infer<typeof formSchema>,
     type: "legado" | "ireadnote" | "sourcereader",
   ) {
+    console.log(values);
+    const result = generateProfile(type, apiUrl, values);
     navigator.clipboard.writeText(
-      JSON.stringify(generateProfile(type, apiUrl, values)),
+      typeof result === "string" ? result : JSON.stringify(result),
     );
   }
 
@@ -179,20 +181,15 @@ export function SynthesisForm() {
           </Accordion>
 
           <section className="flex flex-col gap-2">
-            <Button
-              type="submit"
-              onClick={form.handleSubmit((v) => onSubmit(v, "legado"))}
-            >
+            <Button onClick={form.handleSubmit((v) => onSubmit(v, "legado"))}>
               Copy Legado
             </Button>
             <Button
-              type="submit"
               onClick={form.handleSubmit((v) => onSubmit(v, "ireadnote"))}
             >
               Copy IReadNote
             </Button>
             <Button
-              type="submit"
               onClick={form.handleSubmit((v) => onSubmit(v, "sourcereader"))}
             >
               Copy SourceReader

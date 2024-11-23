@@ -1,5 +1,5 @@
 function buildLegadoUrl(
-  apiUrl: string,
+  apiPath: string,
   options: {
     voiceName: string;
     pitch?: string;
@@ -10,19 +10,14 @@ function buildLegadoUrl(
   },
 ) {
   const { voiceName, pitch, volume, token, format } = options;
-  const url = new URL(apiUrl);
+  const url = new URL(apiPath);
   url.searchParams.set("voiceName", voiceName);
   if (pitch) url.searchParams.set("pitch", pitch);
   // if (rate) url.searchParams.set("rate", rate);
-  url.searchParams.set("rate", "{{(speakSpeed - 10) * 2}}");
   if (volume) url.searchParams.set("volume", volume);
   if (token) url.searchParams.set("token", token);
   if (format) url.searchParams.set("format", format);
-  url.searchParams.set(
-    "text",
-    "{{String(speakText).replace(/&/g, '&amp;').replace(/\\\"/g, '&quot;').replace(/'/g, '&apos;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}}",
-  );
-  return url.toString();
+  return `${url.toString()}&rate={{(speakSpeed - 10) * 2}}&text={{String(speakText).replace(/&/g, '&amp;').replace(/\\\"/g, '&quot;').replace(/'/g, '&apos;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}}`;
 }
 
 function getName(options: { voiceName: string }) {
@@ -41,7 +36,8 @@ export function generateProfile(
     token?: string;
   },
 ) {
-  const url = buildLegadoUrl(apiUrl, options);
+  const apiPath = `${new URL(apiUrl).origin}/api/synthesis`;
+  const url = buildLegadoUrl(apiPath, options);
   switch (type) {
     case "legado":
       return {
@@ -58,7 +54,7 @@ export function generateProfile(
       const config = {
         _ClassName: "JxdAdvCustomTTS",
         _TTSConfigID: generateRandomString(16),
-        ttsConfigGroup: `☁️ ${new URL(apiUrl).hostname}`,
+        ttsConfigGroup: `☁️ ${new URL(apiPath).hostname}`,
         ttsHandles: [
           {
             forGetMethod: 1,
@@ -67,7 +63,7 @@ export function generateProfile(
               text: "%@",
               ...options,
             },
-            url: apiUrl,
+            url: apiPath,
             parser: {
               playData: "ResponseData",
             },
