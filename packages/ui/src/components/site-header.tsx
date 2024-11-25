@@ -8,9 +8,9 @@ export default function SiteHeader() {
       <div className="flex h-14 items-center px-4 justify-between">
         <h1 className="text-2xl font-bold">Read Aloud 导入器</h1>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" asChild size="icon">
+          <Button variant="ghost" asChild>
             <a href="https://github.com/yy4382/read-aloud">
-              <Github />
+              Star me on <Github />
             </a>
           </Button>
           <ModeToggle />

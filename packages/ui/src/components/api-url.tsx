@@ -57,6 +57,9 @@ export default function ApiUrl() {
     <div className="flex flex-col gap-2 w-full">
       <Label>API URL</Label>
       <Input value={apiUrl} onChange={handleInputChange} />
+      <p className="text-[0.8rem] text-neutral-500 dark:text-neutral-400">
+        Cloudflare Workers 部署的 URL。
+      </p>
     </div>
   );
 }

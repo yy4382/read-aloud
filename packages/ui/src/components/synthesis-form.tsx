@@ -19,9 +19,17 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ApiUrlContext } from "./api-url";
 import { generateProfile } from "@/lib/generate-profile";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 const formSchema = z.object({
   voiceName: z.string(),
@@ -61,7 +69,17 @@ export function SynthesisForm() {
   function onSubmit(
     values: z.infer<typeof formSchema>,
     type: "legado" | "ireadnote" | "sourcereader",
+    e?: React.MouseEvent<HTMLButtonElement>,
   ) {
+    if (e) {
+      e.preventDefault();
+    }
+    if (!apiUrl) {
+      toast({
+        title: "API URL 未设置",
+      });
+      return;
+    }
     console.log(values);
     const result = generateProfile(type, apiUrl, values);
     navigator.clipboard
@@ -79,6 +97,12 @@ export function SynthesisForm() {
   }
 
   function tryListen(values: z.infer<typeof formSchema>) {
+    if (!apiUrl) {
+      toast({
+        title: "API URL 未设置",
+      });
+      return;
+    }
     const url = new URL(apiUrl);
     url.pathname = "/api/synthesis";
 
@@ -111,11 +135,12 @@ export function SynthesisForm() {
               <FormItem>
                 <FormLabel>Voice Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="voice name" {...field} />
+                  <VoiceNameSelect
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
                 </FormControl>
-                <FormDescription>
-                  The voice name to use for the synthesis.
-                </FormDescription>
+                <FormDescription>声音名称。</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -127,9 +152,9 @@ export function SynthesisForm() {
               <FormItem>
                 <FormLabel>Text</FormLabel>
                 <FormControl>
-                  <Input placeholder="text" {...field} />
+                  <Textarea placeholder="text" {...field} />
                 </FormControl>
-                <FormDescription>The text to synthesize.</FormDescription>
+                <FormDescription>试听时使用。</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -145,7 +170,7 @@ export function SynthesisForm() {
                   <Input placeholder="token" {...field} />
                 </FormControl>
                 <FormDescription>
-                  The token to use for the synthesis.
+                  Cloudflare Workers 中设置的 TOKEN。
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -154,86 +179,54 @@ export function SynthesisForm() {
 
           <Accordion type="single" collapsible>
             <AccordionItem value="item-1" noBorder>
-              <AccordionTrigger>Advanced</AccordionTrigger>
-              <AccordionContent>
-                <FormField
-                  control={form.control}
-                  name="pitch"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Pitch</FormLabel>
-                      <FormControl>
-                        <Input placeholder="pitch" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="rate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Rate</FormLabel>
-                      <FormControl>
-                        <Input placeholder="rate" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="format"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Format</FormLabel>
-                      <FormControl>
-                        <Input placeholder="format" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="volume"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Volume</FormLabel>
-                      <FormControl>
-                        <Input placeholder="volume" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        The volume to use for the synthesis.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <AccordionTrigger>高级配置</AccordionTrigger>
+              <AccordionContent className="px-2">
+                <p className="text-sm mb-2">
+                  高级配置，请参考{" "}
+                  <a
+                    href="https://learn.microsoft.com/en-us/azure/ai-services/speech-service/speech-synthesis-markup-voice#adjust-prosody"
+                    className="text-blue-500 hover:underline"
+                  >
+                    Microsoft 官方文档
+                  </a>
+                </p>
+                {(["pitch", "rate", "volume", "format"] as const).map((key) => (
+                  <FormField
+                    key={key}
+                    control={form.control}
+                    name={key}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          {key.charAt(0).toUpperCase() + key.slice(1)}
+                        </FormLabel>
+                        <FormControl>
+                          <Input placeholder={key} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ))}
               </AccordionContent>
             </AccordionItem>
           </Accordion>
 
-          <section className="flex flex-col gap-2">
-            <Button onClick={form.handleSubmit((v) => onSubmit(v, "legado"))}>
-              Copy Legado
+          <section className="flex gap-2 flex-wrap">
+            <Button onClick={(e) => onSubmit(form.getValues(), "legado", e)}>
+              复制阅读配置
+            </Button>
+            <Button onClick={(e) => onSubmit(form.getValues(), "ireadnote", e)}>
+              复制爱阅记配置
             </Button>
             <Button
-              onClick={form.handleSubmit((v) => onSubmit(v, "ireadnote"))}
+              onClick={(e) => onSubmit(form.getValues(), "sourcereader", e)}
             >
-              Copy IReadNote
+              复制源阅读配置
             </Button>
-            <Button
-              onClick={form.handleSubmit((v) => onSubmit(v, "sourcereader"))}
-            >
-              Copy SourceReader
-            </Button>
-            <Button onClick={form.handleSubmit((v) => tryListen(v))}>
-              Try Listen
-            </Button>
+            <Button onClick={form.handleSubmit(tryListen)}>试听</Button>
             <Button type="reset" onClick={() => form.reset()}>
-              Reset
+              重置
             </Button>
           </section>
         </form>
@@ -252,5 +245,44 @@ function AudioPlayer({ url }: { url: string | null }) {
         </audio>
       )}
     </>
+  );
+}
+
+async function fetchVoices() {
+  const res = await fetch(
+    "https://speech.platform.bing.com/consumer/speech/synthesize/readaloud/voices/list?trustedclienttoken=6A5AA1D4EAFF4E9FB37E23D68491D6F4",
+  );
+  return (
+    (await res.json())
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      .map((v: any) => v.ShortName)
+      .filter((v: string) => v.startsWith("zh-"))
+  );
+}
+
+function VoiceNameSelect({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const [voices, setVoices] = useState<string[]>([]);
+  useEffect(() => {
+    fetchVoices().then(setVoices);
+  }, []);
+  return (
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger>
+        <SelectValue placeholder="选择声音" />
+      </SelectTrigger>
+      <SelectContent>
+        {voices.map((v) => (
+          <SelectItem key={v} value={v}>
+            {v}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
