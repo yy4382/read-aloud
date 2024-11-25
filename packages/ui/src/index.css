@@ -22,6 +22,10 @@ body {
   @apply dark:bg-[#09090b] bg-white dark:text-white/85 text-[#213547];
 }
 
+.prose a {
+  @apply text-blue-500 dark:text-blue-400 hover:underline;
+}
+
 @layer base {
   :root {
     --radius: 0.5rem;
