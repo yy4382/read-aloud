@@ -15,6 +15,7 @@ app.get("/", async (c) => {
 app.route("/api", api);
 
 export default app;
+app.get("/robots.txt", (c) => c.text("User-agent: *\nDisallow: /"));
 app.get("/api/ui", swaggerUI({ url: "/api/doc" }));
 app.doc("/api/doc", {
   openapi: "3.0.0",
