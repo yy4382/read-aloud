@@ -1,8 +1,3 @@
-import { randomBytes } from "node:crypto";
-
-// actually from "buffer" package, https://www.npmjs.com/package/buffer
-import { Buffer } from "isomorphic-buffer";
-
 export const FORMAT_CONTENT_TYPE = new Map([
   ["raw-16khz-16bit-mono-pcm", "audio/basic"],
   ["raw-48khz-16bit-mono-pcm", "audio/basic"],
@@ -37,16 +32,16 @@ export const FORMAT_CONTENT_TYPE = new Map([
 
 class SynthesisRequest {
   requestId: string;
-  buffer: Buffer;
-  successCallback: (buffer: Buffer) => void;
+  bufferChunks: Uint8Array[];
+  successCallback: (buffer: Uint8Array) => void;
   errorCallback: (error: Error) => void;
   constructor(
     requestId: string,
-    successCallback: (buffer: Buffer) => void,
+    successCallback: (buffer: Uint8Array) => void,
     errorCallback: (error: Error) => void,
   ) {
     this.requestId = requestId;
-    this.buffer = Buffer.from([]);
+    this.bufferChunks = [];
     this.successCallback = successCallback;
     this.errorCallback = errorCallback;
   }
@@ -77,15 +72,18 @@ class SynthesisRequest {
   handleString(data: string) {
     if (data.includes("Path:turn.start")) {
       // 开始传输
-      console.debug(`Turn Start：${this.requestId}……`);
+      console.debug(`Turn Start：${this.requestId}...`);
     } else if (data.includes("Path:turn.end")) {
       // 结束传输
-      console.debug(`Turn End：${this.requestId}……`);
-      this.successCallback(this.buffer);
+      console.debug(
+        `Turn End：${this.requestId} with ${this.bufferChunks.length} chunks...`,
+      );
+      const result = concatenate(this.bufferChunks);
+      this.successCallback(result);
     }
   }
-  handleBuffer(data: Buffer) {
-    this.buffer = Buffer.concat([this.buffer, data]);
+  handleBuffer(data: Uint8Array) {
+    this.bufferChunks.push(data);
   }
 }
 
@@ -94,6 +92,9 @@ function parseRequestId(data: string) {
   const matches = data.match(pattern);
   return matches?.groups?.id ?? null;
 }
+
+// Path:audio\r\n
+const AUDIO_SEP = [80, 97, 116, 104, 58, 97, 117, 100, 105, 111, 13, 10];
 
 function handleMessage(message: MessageEvent) {
   const data = message.data;
@@ -104,17 +105,18 @@ function handleMessage(message: MessageEvent) {
       return { requestId, data };
     }
     case "object": {
-      const bufferData = Buffer.from(data);
-      const separator = "Path:audio\r\n";
-      const contentIndex = bufferData.indexOf(separator) + separator.length;
-      const headers = bufferData.slice(2, contentIndex).toString();
+      const bufferData = new Uint8Array(data);
+      const contentIndex =
+        indexOfUint8Array(bufferData, AUDIO_SEP) + AUDIO_SEP.length;
+      const headers = new TextDecoder("utf-8").decode(
+        bufferData.subarray(2, contentIndex),
+      );
       const requestId = parseRequestId(headers);
       console.debug(
         `Received binary/audio (${requestId})：length: ${data.byteLength}`,
       );
 
-      const content = bufferData.slice(contentIndex);
-      return { requestId, data: content };
+      return { requestId, data: bufferData.subarray(contentIndex) };
     }
   }
 }
@@ -139,7 +141,7 @@ export class Service {
   }
 
   private async connect(): Promise<WebSocket> {
-    const connectionId = randomBytes(16).toString("hex").toLowerCase();
+    const connectionId = randomUUID().toLowerCase();
     const url = `wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=6A5AA1D4EAFF4E9FB37E23D68491D6F4&ConnectionId=${connectionId}`;
     const ws = new WebSocket(url);
     ws.addEventListener("close", (closeEvent) => {
@@ -198,8 +200,8 @@ export class Service {
       this.ws = connection;
       console.info("Connected");
     }
-    const requestId = randomBytes(16).toString("hex").toLowerCase();
-    const result = new Promise<Buffer>((resolve, reject) => {
+    const requestId = randomUUID().toLowerCase();
+    const result = new Promise<Uint8Array>((resolve, reject) => {
       // 等待服务器返回后这个方法才会返回结果
       const request = new SynthesisRequest(requestId, resolve, reject);
       this.requestMap.set(requestId, request);
@@ -238,4 +240,47 @@ export class Service {
     console.info(`${this.requestMap.size} tasks remaining`);
     return data;
   }
+}
+
+function randomUUID() {
+  return crypto.randomUUID().replaceAll("-", "");
+}
+
+function concatenate(uint8arrays: Uint8Array[]) {
+  const totalLength = uint8arrays.reduce(
+    (total, uint8array) => total + uint8array.byteLength,
+    0,
+  );
+
+  const result = new Uint8Array(totalLength);
+  let offset = 0;
+  for (const uint8array of uint8arrays) {
+    result.set(uint8array, offset);
+    offset += uint8array.byteLength;
+  }
+
+  return result;
+}
+
+function indexOfUint8Array(buffer: Uint8Array, separator: number[]) {
+  if (separator.length === 0) {
+    return 0;
+  }
+
+  const len = buffer.length - separator.length;
+  let i = 0;
+
+  outer: while (i <= len) {
+    if (buffer[i] === separator[0]) {
+      for (let j = 1; j < separator.length; j++) {
+        if (buffer[i + j] !== separator[j]) {
+          i++;
+          continue outer;
+        }
+      }
+      return i;
+    }
+    i++;
+  }
+  return -1;
 }

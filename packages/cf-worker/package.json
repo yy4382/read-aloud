@@ -8,7 +8,6 @@
     "@hono/swagger-ui": "^0.4.1",
     "@hono/zod-openapi": "^0.16.2",
     "hono": "^4.6.3",
-    "isomorphic-buffer": "npm:buffer@^6.0.3",
     "xast-util-to-xml": "^4.0.0",
     "xastscript": "^4.0.0"
   },
