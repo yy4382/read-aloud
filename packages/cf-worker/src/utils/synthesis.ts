@@ -96,7 +96,7 @@ function parseRequestId(data: string) {
 // Path:audio\r\n
 const AUDIO_SEP = [80, 97, 116, 104, 58, 97, 117, 100, 105, 111, 13, 10];
 
-function handleMessage(message: MessageEvent) {
+async function handleMessage(message: MessageEvent) {
   const data = message.data;
   switch (typeof data) {
     case "string": {
@@ -105,7 +105,12 @@ function handleMessage(message: MessageEvent) {
       return { requestId, data };
     }
     case "object": {
-      const bufferData = new Uint8Array(data);
+      const bufferData = new Uint8Array(
+        // if run in node, data is a Blob, otherwise it's a ArrayBuffer
+        data.constructor.name === "Blob"
+          ? await (data as unknown as Blob).arrayBuffer()
+          : data,
+      );
       const contentIndex =
         indexOfUint8Array(bufferData, AUDIO_SEP) + AUDIO_SEP.length;
       const headers = new TextDecoder("utf-8").decode(
@@ -113,7 +118,7 @@ function handleMessage(message: MessageEvent) {
       );
       const requestId = parseRequestId(headers);
       console.debug(
-        `Received binary/audio (${requestId})：length: ${data.byteLength}`,
+        `Received binary/audio (${requestId})：length: ${bufferData.byteLength}`,
       );
 
       return { requestId, data: bufferData.subarray(contentIndex) };
@@ -156,8 +161,8 @@ export class Service {
       console.info(`Connection Closed： ${reason} ${code}`);
     });
 
-    ws.addEventListener("message", (message) => {
-      const { requestId, data } = handleMessage(message);
+    ws.addEventListener("message", async (message) => {
+      const { requestId, data } = await handleMessage(message);
       if (requestId == null) {
         console.debug("Received unrecognized message");
         return;

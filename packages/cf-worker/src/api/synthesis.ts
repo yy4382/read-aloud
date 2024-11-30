@@ -65,7 +65,17 @@ synthesis.openapi(route, async (c) => {
     token,
   } = c.req.valid("query");
 
-  if (c.env.TOKEN !== undefined && c.env.TOKEN !== "") {
+  function getToken() {
+    if (typeof globalThis.process !== "undefined") {
+      return globalThis.process.env.TOKEN;
+    }
+    if (c.env.TOKEN !== undefined && c.env.TOKEN !== "") {
+      return c.env.TOKEN;
+    }
+    return "";
+  }
+
+  if (getToken() !== "") {
     if (token !== c.env.TOKEN) {
       c.status(401);
       return c.text("Unauthorized");
