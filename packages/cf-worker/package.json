@@ -1,8 +1,11 @@
 {
   "name": "cf-worker",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy --minify"
+    "dev:worker": "wrangler dev",
+    "deploy:worker": "wrangler deploy --minify --outdir=dist-worker"
+  },
+  "exports": {
+    "workerd": "./entries/workerd.ts"
   },
   "dependencies": {
     "@hono/swagger-ui": "^0.4.1",
