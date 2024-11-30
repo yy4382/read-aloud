@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["**/dist/*", "**/dist-worker/*"]
+    "ignore": ["**/dist/*", "**/dist-*/*"]
   },
   "formatter": {
     "enabled": true,
