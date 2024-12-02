@@ -21,4 +21,4 @@ COPY --from=builder --chown=hono:nodejs /app/packages/cf-worker/dist-node /app/d
 USER hono
 EXPOSE 3000
 
-CMD ["node", "/app/dist/node.js"]
+CMD ["node", "/app/dist/node.mjs"]

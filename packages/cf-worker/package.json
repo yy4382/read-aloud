@@ -3,9 +3,8 @@
   "scripts": {
     "dev:worker": "wrangler dev",
     "deploy:worker": "wrangler deploy --minify --outdir=dist-worker",
-    "dev:node": "esbuild --watch --bundle --loader:.html=text --platform=node --outdir=dist-node entries/node.ts",
-    "devrun:node": "node --watch dist-node/node.js",
-    "build:node": "esbuild --bundle --loader:.html=text --platform=node --outdir=dist-node entries/node.ts"
+    "dev:node": "tsup-node --watch --onSuccess \"node dist-node/node.mjs\"",
+    "build:node": "tsup-node"
   },
   "exports": {
     "workerd": "./entries/workerd.ts"
@@ -22,7 +21,7 @@
     "@cloudflare/workers-types": "^4.20240529.0",
     "@types/node": "20.8.3",
     "@types/xast": "^2.0.4",
-    "esbuild": "^0.24.0",
+    "tsup": "^8.3.5",
     "wrangler": "^3.57.2"
   },
   "overrides": {
