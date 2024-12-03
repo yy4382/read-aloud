@@ -107,6 +107,14 @@ async function handleMessage(message: MessageEvent) {
     case "object": {
       const bufferData = new Uint8Array(
         // if run in node, data is a Blob, otherwise it's a ArrayBuffer
+        /*
+        Calling arrayBuffer() is not optimal, maybe reading from stream is better,
+        but it actually not a big deal, since we don't have a strict performance requirement
+        when running on Node
+
+        On Cloudflare, data comes as ArrayBuffer, so even we want to read from stream,
+        we cannot. So the 10ms CPU limit is a problem.
+        */
         data.constructor.name === "Blob"
           ? await (data as unknown as Blob).arrayBuffer()
           : data,
