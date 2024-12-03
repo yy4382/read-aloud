@@ -1,6 +1,7 @@
 {
   "name": "cf-worker",
   "scripts": {
+    "prebuild:worker": "tsup --outDir=dist-prebuild entries/workerd.ts",
     "dev:worker": "wrangler dev",
     "deploy:worker": "wrangler deploy --minify --outdir=dist-worker",
     "dev:node": "tsup-node --watch --onSuccess \"node dist-node/node.mjs\"",

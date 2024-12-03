@@ -60,24 +60,27 @@ class SynthesisRequest {
       },
     };
     const configMessage = `X-Timestamp:${Date()}\r\nContent-Type:application/json; charset=utf-8\r\nPath:speech.config\r\n\r\n${JSON.stringify(configData)}`;
-    console.debug(`Start to send config：${this.requestId}\n`, configMessage);
+    DEBUG &&
+      console.debug(`Start to send config：${this.requestId}\n`, configMessage);
     send(configMessage);
 
     // 发送SSML消息
     const ssmlMessage = `X-Timestamp:${Date()}\r\nX-RequestId:${this.requestId}\r\nContent-Type:application/ssml+xml\r\nPath:ssml\r\n\r\n${ssml}`;
-    console.debug(`Start to send SSML：${this.requestId}\n`, ssmlMessage);
+    DEBUG &&
+      console.debug(`Start to send SSML：${this.requestId}\n`, ssmlMessage);
     send(ssmlMessage);
   }
 
   handleString(data: string) {
     if (data.includes("Path:turn.start")) {
       // 开始传输
-      console.debug(`Turn Start：${this.requestId}...`);
+      DEBUG && console.debug(`Turn Start：${this.requestId}...`);
     } else if (data.includes("Path:turn.end")) {
       // 结束传输
-      console.debug(
-        `Turn End：${this.requestId} with ${this.bufferChunks.length} chunks...`,
-      );
+      DEBUG &&
+        console.debug(
+          `Turn End：${this.requestId} with ${this.bufferChunks.length} chunks...`,
+        );
       const result = concatenate(this.bufferChunks);
       this.successCallback(result);
     }
@@ -101,7 +104,7 @@ async function handleMessage(message: MessageEvent) {
   switch (typeof data) {
     case "string": {
       const requestId = parseRequestId(data);
-      console.debug(`Received string (${requestId}): ${data}\n`);
+      DEBUG && console.debug(`Received string (${requestId}): ${data}\n`);
       return { requestId, data };
     }
     case "object": {
@@ -125,9 +128,10 @@ async function handleMessage(message: MessageEvent) {
         bufferData.subarray(2, contentIndex),
       );
       const requestId = parseRequestId(headers);
-      console.debug(
-        `Received binary/audio (${requestId})：length: ${bufferData.byteLength}`,
-      );
+      DEBUG &&
+        console.debug(
+          `Received binary/audio (${requestId})：length: ${bufferData.byteLength}`,
+        );
 
       return { requestId, data: bufferData.subarray(contentIndex) };
     }
@@ -172,7 +176,7 @@ export class Service {
     ws.addEventListener("message", async (message) => {
       const { requestId, data } = await handleMessage(message);
       if (requestId == null) {
-        console.debug("Received unrecognized message");
+        DEBUG && console.debug("Received unrecognized message");
         return;
       }
       const request = this.requestMap.get(requestId);
@@ -181,7 +185,7 @@ export class Service {
           ? request.handleString(data)
           : request.handleBuffer(data);
       } else {
-        console.debug("Received message for unknown request");
+        DEBUG && console.debug("Received message for unknown request");
         return;
       }
     });
@@ -218,23 +222,23 @@ export class Service {
       // 等待服务器返回后这个方法才会返回结果
       const request = new SynthesisRequest(requestId, resolve, reject);
       this.requestMap.set(requestId, request);
-      console.debug("Request received", requestId);
+      console.info("Request received", requestId);
       // 发送配置消息
       // biome-ignore lint/style/noNonNullAssertion: ws should be initialized above
       request.send(ssml, format, (data) => this.ws!.send(data));
     });
     // 收到请求，清除超时定时器
     if (this.timerId) {
-      console.debug("Received request, clearing timeout timer");
+      DEBUG && console.debug("Received request, clearing timeout timer");
       clearTimeout(this.timerId);
       this.timerId = undefined;
     }
     // 设置定时器，超过10秒没有收到请求，主动断开连接
-    console.debug("Creating timeout timer");
+    DEBUG && console.debug("Creating timeout timer");
     this.timerId = setTimeout(() => {
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
         this.ws.close(1000);
-        console.debug("Connection Closed by client due to inactivity");
+        DEBUG && console.debug("Connection Closed by client due to inactivity");
         this.timerId = undefined;
       }
     }, 10000);

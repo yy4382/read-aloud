@@ -93,7 +93,7 @@ synthesis.openapi(route, async (c) => {
     throw new HTTPException(400, { message: `无效的音频格式：${format}` });
   }
   const ssml = buildSsml(text, { voiceName, pitch, rate, volume });
-  console.debug("SSML:", ssml);
+  DEBUG && console.debug("SSML:", ssml);
   try {
     const result = await retry(
       async () => {

@@ -11,4 +11,10 @@ export default defineConfig((options) => ({
   format: "esm",
   outDir: "dist-node",
   noExternal: options.watch ? undefined : [/(.*)/],
+  esbuildOptions: (esbuildOptions) => {
+    esbuildOptions.define = {
+      ...esbuildOptions.define,
+      DEBUG: options.watch ? "true" : "false",
+    };
+  },
 }));
