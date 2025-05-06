@@ -12,11 +12,6 @@
 
 ### Cloudflare Workers
 
-> [!WARNING]
-> 由于 Cloudflare 的一些破坏性变更，这个按钮暂时不能使用（不能真正部署程序）。由于修复这个问题需要重构应用，可以需要一些时间。
-> 
-> 在此期间可以暂时先使用 [#1](https://github.com/yy4382/read-aloud/issues/1) 中的主实例资源
-
 [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/yy4382/read-aloud)
 
 指南：[Deploy with Workers 按钮使用指南 - Yunfi](https://yfi.moe/post/deploy-with-cloudflare-btn-guide)
