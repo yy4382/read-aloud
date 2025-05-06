@@ -46,3 +46,11 @@ Swagger 文档：<https://ra.yfi.moe/api/ui>
 - [yy4382/tts-importer](https://github.com/yy4382/tts-importer) 本项目的姊妹项目，使用微软 Azure 的官方接口，支持更多语音和其他高级配置。
 
 更多有关听书的信息，请访问 [我的听书方法汇总 - Yunfi](https://yfi.moe/book-listening-collection)
+
+## How does the bundling / deployment work?
+
+### Cloudflare Workers
+
+Deploy to Cloudflare 按钮默认使用 package.json 中 deploy 脚本进行部署。
+
+流程：tsup 打包到 dist-prebuild 目录（`pnpm run prebuild:worker`）（由 wrangler.toml 中的 build 参数运行该命令），然后 wrangler deploy 将 `dist-prebuild/workerd.mjs`（由 wrangler.toml 中的 main 参数指定该文件）部署到 Cloudflare Workers。

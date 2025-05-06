@@ -22,13 +22,13 @@
     "xastscript": "^4.0.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20240529.0",
+    "@biomejs/biome": "1.9.2",
+    "@cloudflare/workers-types": "^4.20250506.0",
     "@types/node": "20.8.3",
     "@types/xast": "^2.0.4",
     "tsup": "^8.3.5",
-    "wrangler": "^3.57.2",
-    "@biomejs/biome": "1.9.2",
-    "typescript": "~5.6.2"
+    "typescript": "~5.6.2",
+    "wrangler": "^4.14.1"
   },
   "packageManager": "pnpm@9.11.0+sha256.1c0e33f70e5df9eede84a357bdfa0b1f9dba6e58194628d48a1055756f553754"
 }
