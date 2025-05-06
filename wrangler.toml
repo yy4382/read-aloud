@@ -2,3 +2,7 @@
 name = "read-aloud"
 compatibility_flags = ["nodejs_compat"]
 compatibility_date = "2024-09-23"
+main = "dist-prebuild/workerd.mjs"
+
+[build]
+command = "pnpm run prebuild:worker"

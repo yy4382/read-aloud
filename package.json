@@ -4,13 +4,29 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "cd packages/cf-worker && npm run deploy:worker"
+    "prebuild:worker": "tsup --outDir=dist-prebuild entries/workerd.ts",
+    "dev:worker": "wrangler dev",
+    "deploy": "wrangler deploy --minify --outdir=dist-worker",
+    "dev:node": "tsup-node --watch --onSuccess \"node dist-node/node.mjs\"",
+    "build:node": "tsup-node"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "@hono/node-server": "^1.13.7",
+    "@hono/swagger-ui": "^0.4.1",
+    "@hono/zod-openapi": "^0.16.2",
+    "hono": "^4.6.3",
+    "xast-util-to-xml": "^4.0.0",
+    "xastscript": "^4.0.0"
+  },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240529.0",
+    "@types/node": "20.8.3",
+    "@types/xast": "^2.0.4",
+    "tsup": "^8.3.5",
+    "wrangler": "^3.57.2",
     "@biomejs/biome": "1.9.2",
     "typescript": "~5.6.2"
   },

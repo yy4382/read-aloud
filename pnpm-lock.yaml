@@ -7,15 +7,6 @@ settings:
 importers:
 
   .:
-    devDependencies:
-      '@biomejs/biome':
-        specifier: 1.9.2
-        version: 1.9.2
-      typescript:
-        specifier: ~5.6.2
-        version: 5.6.3
-
-  packages/cf-worker:
     dependencies:
       '@hono/node-server':
         specifier: ^1.13.7
@@ -36,6 +27,9 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
     devDependencies:
+      '@biomejs/biome':
+        specifier: 1.9.2
+        version: 1.9.2
       '@cloudflare/workers-types':
         specifier: ^4.20240529.0
         version: 4.20240925.0
@@ -48,6 +42,9 @@ importers:
       tsup:
         specifier: ^8.3.5
         version: 8.3.5(jiti@1.21.6)(postcss@8.4.49)(typescript@5.6.3)(yaml@2.5.1)
+      typescript:
+        specifier: ~5.6.2
+        version: 5.6.3
       wrangler:
         specifier: ^3.57.2
         version: 3.78.12(@cloudflare/workers-types@4.20240925.0)
