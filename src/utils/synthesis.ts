@@ -138,6 +138,45 @@ async function handleMessage(message: MessageEvent) {
   }
 }
 
+function buf2hex(buffer: ArrayBuffer) {
+  return [...new Uint8Array(buffer)]
+    .map((x) => x.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+async function getURL() {
+  const connectionId = randomUUID().toLowerCase();
+  const TRUSTED_CLIENT_TOKEN = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
+  const WIN_EPOCH = 11644473600; // 秒，从Windows纪元到Unix纪元的偏移量
+  const S_TO_NS = BigInt(1e9);
+  const SEC_MS_GEC_VERSION = "1-131.0.2903.99";
+  async function generateSecMSGEC() {
+    const currentTimestampSeconds = Math.floor(Date.now() / 1000);
+
+    // 调整时间到最近的5分钟（300秒）边界
+    let adjustedSeconds = currentTimestampSeconds + WIN_EPOCH;
+    adjustedSeconds -= adjustedSeconds % 300;
+
+    // 将调整后的时间转换为Windows文件时间（十亿分之一纳秒单位）
+    const winFileTime = BigInt(adjustedSeconds) * (S_TO_NS / 100n);
+
+    // 构造待哈希的字符串
+    const hashInput = `${winFileTime.toString()}${TRUSTED_CLIENT_TOKEN}`;
+
+    // 计算SHA-256哈希并转为大写十六进制格式
+    const encoder = new TextEncoder();
+    const hashInputBuffer = encoder.encode(hashInput);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", hashInputBuffer);
+    const sha256Hash = buf2hex(hashBuffer);
+    // const sha256Hash = createHash("sha256").update(hashInput).digest("hex");
+
+    return sha256Hash.toUpperCase();
+  }
+
+  const url = `wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=${TRUSTED_CLIENT_TOKEN}&Sec-MS-GEC=${await generateSecMSGEC()}&Sec-MS-GEC-Version=${SEC_MS_GEC_VERSION}&ConnectionId=${connectionId}`;
+  return url;
+}
+
 export class Service {
   private ws: WebSocket | null = null;
   private timerId: ReturnType<typeof setTimeout> | undefined = undefined;
@@ -158,8 +197,7 @@ export class Service {
   }
 
   private async connect(): Promise<WebSocket> {
-    const connectionId = randomUUID().toLowerCase();
-    const url = `wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=6A5AA1D4EAFF4E9FB37E23D68491D6F4&ConnectionId=${connectionId}`;
+    const url = await getURL();
     const ws = new WebSocket(url);
     ws.addEventListener("close", (closeEvent) => {
       // 服务器会自动断开空闲超过30秒的连接
