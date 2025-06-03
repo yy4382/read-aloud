@@ -6,3 +6,6 @@ main = "dist-prebuild/workerd.mjs"
 
 [build]
 command = "pnpm run prebuild:worker"
+
+[assets]
+directory = "public"

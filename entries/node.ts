@@ -1,4 +1,5 @@
 import { serve } from "@hono/node-server";
+import { serveStatic } from "@hono/node-server/serve-static";
 import app from "../src";
 
 declare global {
@@ -11,5 +12,7 @@ else
   console.warn(
     "Running without token, please consider set TOKEN in environment variables",
   );
+
+app.use("*", serveStatic({ root: "./public" }));
 
 serve(app);
