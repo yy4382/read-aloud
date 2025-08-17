@@ -14,7 +14,7 @@
 
 [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/yy4382/read-aloud)
 
-指南：[Deploy with Workers 按钮使用指南 - Yunfi](https://yfi.moe/post/deploy-with-cloudflare-btn-guide)
+<!-- 指南：[Deploy with Workers 按钮使用指南 - Yunfi](https://yfi.moe/post/deploy-with-cloudflare-btn-guide) -->
 
 环境变量设置：在 Cloudflare 面板的当前 Workers 项目中，找到 Settings -> Variables and Secrets，即可添加环境变量。
 
