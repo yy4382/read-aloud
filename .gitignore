@@ -10,3 +10,4 @@ dist-prebuild
 dist-worker
 
 .wrangler
+.vercel
