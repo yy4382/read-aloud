@@ -8,7 +8,8 @@
     "dev:worker": "wrangler dev",
     "deploy": "wrangler deploy --minify --outdir=dist-worker",
     "dev:node": "tsup-node --watch --onSuccess \"node dist-node/node.mjs\"",
-    "build:node": "tsup-node"
+    "build:node": "tsup-node",
+    "build:vercel": "pnpm run build:node && mkdir dist-node/api && mv dist-node/node.mjs dist-node/api/index.mjs"
   },
   "keywords": [],
   "author": "",
