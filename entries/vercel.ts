@@ -12,5 +12,4 @@ else
     "Running without token, please consider set TOKEN in environment variables",
   );
 
-export const GET = handle(app);
-export const POST = handle(app);
+export default app;

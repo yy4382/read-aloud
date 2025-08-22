@@ -9,7 +9,8 @@
     "deploy": "wrangler deploy --minify --outdir=dist-worker",
     "dev:node": "tsup-node --watch --onSuccess \"node dist-node/node.mjs\"",
     "build:node": "tsup-node",
-    "build:vercel": "pnpm build:node entries/vercel.ts && cp -r public/* dist-node"
+    "build:vercel": "tsup --outDir=dist-prebuild entries/workerd.ts",
+    "vercel-build": "pnpm run build:vercel"
   },
   "keywords": [],
   "author": "",

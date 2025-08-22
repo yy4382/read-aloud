@@ -11,3 +11,4 @@ dist-worker
 
 .wrangler
 .vercel
+.env*.local
