@@ -22,6 +22,14 @@
 TOKEN=YOUR_TOKEN # Optional
 ```
 
+### Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fyy4382%2Fread-aloud&env=TOKEN&envDescription=%E7%B1%BB%E4%BC%BC%E4%BA%8E%E5%AF%86%E7%A0%81%EF%BC%8C%E9%98%B2%E6%AD%A2%E4%BB%96%E4%BA%BA%E6%BB%A5%E7%94%A8%E4%BD%A0%E7%9A%84%E6%9C%8D%E5%8A%A1&project-name=read-aloud&repository-name=read-aloud)
+
+框架(Framework) 选择 Other，几个 Command 都保持不动（不要 Override）。
+
+环境变量 TOKEN 设置为字母、数字、下划线和连字符的组合（其他特殊字符未被测试是否可用）。
+
 ### Node.js (Docker)
 
 ```bash
@@ -49,3 +57,11 @@ Swagger 文档：<https://ra.yfi.moe/api/ui>
 Deploy to Cloudflare 按钮默认使用 package.json 中 deploy 脚本进行部署。
 
 流程：tsup 打包到 dist-prebuild 目录（`pnpm run prebuild:worker`）（由 wrangler.toml 中的 build 参数运行该命令），然后 wrangler deploy 将 `dist-prebuild/workerd.mjs`（由 wrangler.toml 中的 main 参数指定该文件）部署到 Cloudflare Workers。
+
+### Vercel
+
+使用了 [Custom build step for Node.js](https://vercel.com/docs/functions/runtimes/node-js/advanced-node-configuration#custom-build-step-for-node.js) 方式
+
+通过 `package.json` 中的 `vercel-build` 脚本，Vercel CLI 会执行该命令进行构建，之后 `/api/index.mjs` 会导入构建结果。
+
+同时，依赖 vercel.json 中的 rewrite 配置，将所有 /api 请求重写到 `api/index.mjs` 文件。
