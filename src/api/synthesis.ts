@@ -1,8 +1,9 @@
 import { z, OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { HTTPException } from "hono/http-exception";
-import { Service, FORMAT_CONTENT_TYPE } from "../utils/synthesis";
-import retry, { RetryError } from "../utils/retry";
-import buildSsml from "../utils/buildSsml";
+import { FORMAT_CONTENT_TYPE } from "../lib/tts/synthesis";
+import { service } from "../lib/tts/instance";
+import retry, { RetryError } from "../lib/utils/retry";
+import buildSsml from "../lib/tts/buildSsml";
 type Bindings = {
   TOKEN: string;
 };
@@ -86,8 +87,6 @@ synthesis.openapi(route, async (c) => {
       return c.text("Unauthorized");
     }
   }
-
-  const service = new Service();
 
   if (!FORMAT_CONTENT_TYPE.has(format)) {
     throw new HTTPException(400, { message: `无效的音频格式：${format}` });
