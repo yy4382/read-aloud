@@ -144,6 +144,8 @@ function buf2hex(buffer: ArrayBuffer) {
     .join("");
 }
 
+// provided by and modified from @rexshao
+// https://github.com/yy4382/read-aloud/issues/4#issue-3048109976
 async function getURL() {
   const connectionId = randomUUID().toLowerCase();
   const TRUSTED_CLIENT_TOKEN = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";

@@ -113,7 +113,7 @@ synthesis.openapi(route, async (c) => {
       },
     );
     c.header("Content-Type", FORMAT_CONTENT_TYPE.get(format));
-    return c.body(result);
+    return c.body(result.buffer as ArrayBuffer);
   } catch (error) {
     if (error instanceof HTTPException) throw error;
     c.status(500);

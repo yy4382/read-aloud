@@ -10,3 +10,5 @@ dist-prebuild
 dist-worker
 
 .wrangler
+.vercel
+.env*.local
