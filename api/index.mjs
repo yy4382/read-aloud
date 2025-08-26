@@ -7,6 +7,6 @@
  * 同时，依赖 vercel.json 中的 rewrite 配置，将所有 /api 请求重写到这个文件。
  */
 
-import app from "../dist-prebuild/workerd.mjs";
+import app from "../dist-prebuild/index.js";
 
 export default app;

@@ -1,6 +1,6 @@
 # 微软“朗读” TTS 转发器
 
-运行于 Cloudflare Workers / Node.js (Docker) 上的微软“大声朗读”转发器。通过简单的 HTTP GET 请求，将文本转换为语音。
+运行于 Cloudflare Workers / Vercel / Node.js (Docker) 上的微软“大声朗读”转发器。通过简单的 HTTP GET 请求，将文本转换为语音。
 
 **可以直接使用的资源**：https://github.com/yy4382/read-aloud/issues/1
 

@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "prebuild:worker": "tsup --outDir=dist-prebuild entries/workerd.ts",
+    "prebuild:worker": "node build.js --target=workerd",
     "dev:worker": "wrangler dev",
     "deploy": "wrangler deploy --minify --outdir=dist-worker",
-    "dev:node": "tsup-node --watch --onSuccess \"node dist-node/node.mjs\"",
-    "build:node": "tsup-node",
-    "build:vercel": "tsup --outDir=dist-prebuild entries/workerd.ts",
+    "dev:node": "tsx watch entries/node.ts",
+    "build:node": "node build.js --target=node",
+    "build:vercel": "node build.js --target=vercel",
     "vercel-build": "pnpm run build:vercel"
   },
   "keywords": [],
@@ -28,7 +29,8 @@
     "@cloudflare/workers-types": "^4.20250506.0",
     "@types/node": "20.8.3",
     "@types/xast": "^2.0.4",
-    "tsup": "^8.3.5",
+    "esbuild": "^0.25.9",
+    "tsx": "^4.20.5",
     "typescript": "~5.6.2",
     "wrangler": "^4.14.1"
   },
