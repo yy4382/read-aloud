@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "prebuild:worker": "node build.js --target=workerd",
+    "prebuild:worker": "node build.js --target=workerd --debug",
     "dev:worker": "wrangler dev",
     "deploy": "wrangler deploy --minify --outdir=dist-worker",
     "dev:node": "tsx watch entries/node.ts",

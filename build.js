@@ -8,6 +8,10 @@ const args = parseArgs({
     target: {
       type: "string",
     },
+    debug: {
+      type: "boolean",
+      default: false,
+    }
   },
   allowPositionals: false,
   strict: true,
@@ -37,4 +41,7 @@ await esbuild.build({
   bundle: true,
   platform: "node",
   format: "esm",
+  define: {
+    DEBUG: args.values.debug ? "true" : "false",
+  },
 });
