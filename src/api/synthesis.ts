@@ -67,6 +67,7 @@ synthesis.openapi(route, async (c) => {
     token,
   } = c.req.valid("query");
 
+  const debug = env(c).DEBUG === "1" || env(c).DEBUG === "true";
   const systemToken = env(c).TOKEN;
 
   if (systemToken !== "") {
@@ -80,7 +81,7 @@ synthesis.openapi(route, async (c) => {
     throw new HTTPException(400, { message: `无效的音频格式：${format}` });
   }
   const ssml = buildSsml(text, { voiceName, pitch, rate, volume });
-  DEBUG && console.debug("SSML:", ssml);
+  debug && console.debug("SSML:", ssml);
 
   // getting service instance, cloudflare workerd has limitation that each request
   // should not share IO objects, so we need to create a new instance for each request
@@ -90,6 +91,10 @@ synthesis.openapi(route, async (c) => {
   } else {
     // workerd
     service = new Service();
+  }
+
+  if (debug) {
+    service.debug = true;
   }
 
   try {

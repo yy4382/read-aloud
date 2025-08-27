@@ -1,4 +1,3 @@
-# not a actual wrangler.toml file, a workaround to prevent cloudflare from refusing to deploy (for not having a wrangler.toml file)
 name = "read-aloud"
 compatibility_flags = ["nodejs_compat"]
 compatibility_date = "2024-09-23"
