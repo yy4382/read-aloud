@@ -21,4 +21,4 @@ COPY --from=builder --chown=hono:nodejs /app/public /app/public
 USER hono
 EXPOSE 3000
 
-CMD ["node", "/app/dist/node.mjs"]
+CMD ["node", "/app/dist/node.js"]
