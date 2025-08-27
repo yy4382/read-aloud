@@ -1,7 +1,8 @@
 import { z, OpenAPIHono, createRoute } from "@hono/zod-openapi";
+import { env, getRuntimeKey } from "hono/adapter";
 import { HTTPException } from "hono/http-exception";
 import { FORMAT_CONTENT_TYPE } from "../lib/tts/synthesis";
-import { service } from "../lib/tts/instance";
+import { Service } from "../lib/tts/synthesis";
 import retry, { RetryError } from "../lib/utils/retry";
 import buildSsml from "../lib/tts/buildSsml";
 type Bindings = {
@@ -66,20 +67,7 @@ synthesis.openapi(route, async (c) => {
     token,
   } = c.req.valid("query");
 
-  function getToken() {
-    if (
-      typeof globalThis.process !== "undefined" &&
-      globalThis.process.env.TOKEN !== undefined
-    ) {
-      return globalThis.process.env.TOKEN;
-    }
-    if (c.env.TOKEN !== undefined && c.env.TOKEN !== "") {
-      return c.env.TOKEN;
-    }
-    return "";
-  }
-
-  const systemToken = getToken();
+  const systemToken = env(c).TOKEN;
 
   if (systemToken !== "") {
     if (token !== systemToken) {
@@ -93,6 +81,17 @@ synthesis.openapi(route, async (c) => {
   }
   const ssml = buildSsml(text, { voiceName, pitch, rate, volume });
   DEBUG && console.debug("SSML:", ssml);
+
+  // getting service instance, cloudflare workerd has limitation that each request
+  // should not share IO objects, so we need to create a new instance for each request
+  let service: Service;
+  if (getRuntimeKey() === "node") {
+    service = await import("../lib/tts/instance").then((m) => m.service);
+  } else {
+    // workerd
+    service = new Service();
+  }
+
   try {
     const result = await retry(
       async () => {
