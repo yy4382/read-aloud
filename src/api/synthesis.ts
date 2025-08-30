@@ -70,7 +70,7 @@ synthesis.openapi(route, async (c) => {
   const debug = env(c).DEBUG === "1" || env(c).DEBUG === "true";
   const systemToken = env(c).TOKEN;
 
-  if (systemToken !== "") {
+  if (systemToken !== "" && systemToken !== undefined) {
     if (token !== systemToken) {
       c.status(401);
       return c.text("Unauthorized");
