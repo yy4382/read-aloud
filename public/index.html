@@ -9,11 +9,11 @@
     <meta property="og:type" content="website" />
     <meta
       property="og:title"
-      content="Read Aloud (Edge TTS) 转发器，运行于 Cloudflare Workers"
+      content="Read Aloud (Edge TTS) 转发器，支持部署在多种平台"
     />
     <meta
       property="og:description"
-      content="运行于 Cloudflare Workers 上的微软“大声朗读”转发器。通过简单的 HTTP GET 请求，将文本转换为语音。"
+      content="微软“大声朗读”转发器，支持部署在多种平台。通过简单的 HTTP GET 请求，将文本转换为语音。"
     />
 
     <meta property="og:image" content="https://ra.yfi.moe/og-ra.png" />
@@ -24,11 +24,11 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta
       name="twitter:title"
-      content="Read Aloud (Edge TTS) 转发器，运行于 Cloudflare Workers"
+      content="Read Aloud (Edge TTS) 转发器，支持部署在多种平台"
     />
     <meta
       name="twitter:description"
-      content="运行于 Cloudflare Workers 上的微软“大声朗读”转发器。通过简单的 HTTP GET 请求，将文本转换为语音。"
+      content="微软“大声朗读”转发器，支持部署在多种平台。通过简单的 HTTP GET 请求，将文本转换为语音。"
     />
     <meta name="twitter:image" content="https://ra.yfi.moe/og-ra.png" />
     <meta name="twitter:image:width" content="1200" />
@@ -57,7 +57,10 @@
         </ul>
       </nav>
       <h1>微软“朗读” TTS 转发器</h1>
-      <p>运行于 Cloudflare Workers 上的微软“大声朗读”转发器。</p>
+      <p>
+        微软“大声朗读”转发器，支持部署在 Cloudflare Workers、Vercel、Node.js
+        (Docker) 等平台。
+      </p>
       <p
         style="
           display: flex;
@@ -101,15 +104,15 @@
           <a href="https://github.com/wxxxcxx/ms-ra-forwarder"
             >wxxxcxx/ms-ra-forwarder: 免费的在线文本转语音API</a
           >
-          本项目的“祖师爷”，部分代码灵感的来源。只支持 Node.js 运行时。
+          本项目最初参考的版本，部分代码架构的来源。只支持 Node.js 运行时。
         </li>
         <li>
           <a href="https://github.com/yy4382/ms-ra-forwarder-for-ifreetime"
             >yy4382/ms-ra-forwarder-for-ifreetime</a
           >
-          Fork 自
-          wxxxcxx/ms-ra-forwarder，添加了对爱阅书香和爱阅记的支持。本项目是它的
-          Cloudflare Workers 移植重写版本。
+          我对 wxxxcxx/ms-ra-forwarder 的 Fork
+          版本，添加了对爱阅书香和爱阅记的支持。不过由于上游的重构，不再被积极维护；本项目是它的继承者，添加了对
+          Cloudflare Workers 的支持。
         </li>
         <li>
           <a href="https://github.com/yy4382/tts-importer"
@@ -123,7 +126,7 @@
         更多有关听书的信息，请访问
         <a href="https://yfi.moe/book-listening-collection"
           >我的听书方法汇总 - Yunfi</a
-        >
+        >。
       </p>
     </main>
     <footer>
