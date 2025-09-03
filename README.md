@@ -22,13 +22,15 @@
 TOKEN=YOUR_TOKEN # Optional
 ```
 
+TOKEN 类似于密码，如果设置，则只有拥有该令牌的请求才能使用该服务。
+
 ### Vercel
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fyy4382%2Fread-aloud&env=TOKEN&envDescription=%E7%B1%BB%E4%BC%BC%E4%BA%8E%E5%AF%86%E7%A0%81%EF%BC%8C%E9%98%B2%E6%AD%A2%E4%BB%96%E4%BA%BA%E6%BB%A5%E7%94%A8%E4%BD%A0%E7%9A%84%E6%9C%8D%E5%8A%A1&project-name=read-aloud&repository-name=read-aloud)
 
 框架(Framework) 选择 Other，几个 Command 都保持不动（不要 Override）。
 
-环境变量 TOKEN 设置为字母、数字、下划线和连字符的组合（其他特殊字符未被测试是否可用）。
+环境变量 TOKEN 设置为字母、数字、下划线和连字符的组合（其他特殊字符未被测试是否可用）。TOKEN 类似于密码，如果设置，则只有拥有该令牌的请求才能使用该服务。
 
 ### Node.js (Docker)
 
@@ -37,6 +39,18 @@ docker run -d --name read-aloud -p 3000:3000 -e TOKEN=YOUR_TOKEN yunfinibol/read
 ```
 
 记得将 `YOUR_TOKEN` 替换为你的实际令牌。
+
+TOKEN 类似于密码，如果设置，则只有拥有该令牌的请求才能使用该服务。
+
+更新 Docker 镜像：
+
+```bash
+# 获取最新镜像
+docker pull yunfinibol/read-aloud:main
+# 重启容器
+docker rm -f read-aloud
+docker run -d --name read-aloud -p 3000:3000 -e TOKEN=YOUR_TOKEN yunfinibol/read-aloud:main
+```
 
 ## API 参考
 
