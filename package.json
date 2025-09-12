@@ -11,28 +11,29 @@
     "dev:node": "tsx watch entries/node.ts",
     "build:node": "node build.js --target=node",
     "build:vercel": "node build.js --target=vercel",
-    "vercel-build": "pnpm run build:vercel"
+    "vercel-build": "pnpm run build:vercel",
+    "generate-types": "wrangler types",
+    "prepare": "pnpm run generate-types"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@hono/node-server": "^1.13.7",
-    "@hono/swagger-ui": "^0.4.1",
-    "@hono/zod-openapi": "^0.16.2",
-    "hono": "^4.6.3",
+    "@hono/node-server": "^1.19.2",
+    "@hono/swagger-ui": "^0.5.2",
+    "@hono/zod-openapi": "^1.1.0",
+    "hono": "^4.9.7",
     "xast-util-to-xml": "^4.0.0",
     "xastscript": "^4.0.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.2",
-    "@cloudflare/workers-types": "^4.20250506.0",
+    "@biomejs/biome": "2.2.4",
     "@types/node": "20.8.3",
     "@types/xast": "^2.0.4",
     "esbuild": "^0.25.9",
     "tsx": "^4.20.5",
-    "typescript": "~5.6.2",
-    "wrangler": "^4.14.1"
+    "typescript": "~5.9.2",
+    "wrangler": "^4.35.0"
   },
   "packageManager": "pnpm@9.11.0+sha256.1c0e33f70e5df9eede84a357bdfa0b1f9dba6e58194628d48a1055756f553754"
 }

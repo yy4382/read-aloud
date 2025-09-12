@@ -1,6 +1,6 @@
 name = "read-aloud"
 compatibility_flags = ["nodejs_compat"]
-compatibility_date = "2024-09-23"
+compatibility_date = "2025-09-01"
 main = "dist-prebuild/index.js"
 
 [build]

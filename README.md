@@ -64,18 +64,28 @@ Swagger 文档：<https://ra.yfi.moe/api/ui>
 
 更多有关听书的信息，请访问 [我的听书方法汇总 - Yunfi](https://yfi.moe/book-listening-collection)
 
-## How does the bundling / deployment work?
+## Development Notes
 
-### Cloudflare Workers
+### How does the bundling / deployment work?
+
+#### Cloudflare Workers
 
 Deploy to Cloudflare 按钮默认使用 package.json 中 deploy 脚本进行部署。
 
 流程：tsup 打包到 dist-prebuild 目录（`pnpm run prebuild:worker`）（由 wrangler.toml 中的 build 参数运行该命令），然后 wrangler deploy 将 `dist-prebuild/workerd.mjs`（由 wrangler.toml 中的 main 参数指定该文件）部署到 Cloudflare Workers。
 
-### Vercel
+#### Vercel
 
 使用了 [Custom build step for Node.js](https://vercel.com/docs/functions/runtimes/node-js/advanced-node-configuration#custom-build-step-for-node.js) 方式
 
 通过 `package.json` 中的 `vercel-build` 脚本，Vercel CLI 会执行该命令进行构建，之后 `/api/index.mjs` 会导入构建结果。
 
 同时，依赖 vercel.json 中的 rewrite 配置，将所有 /api 请求重写到 `api/index.mjs` 文件。
+
+### Cloudflare Typescript types
+
+https://developers.cloudflare.com/workers/languages/typescript/
+
+通过 `pnpm run generate-types` 脚本，生成 Cloudflare Workers 的 Typescript 类型定义文件。
+
+需要在每次更改 wrangler.toml 文件后运行该脚本。

@@ -103,7 +103,8 @@ function parseRequestId(data: string) {
 const AUDIO_SEP = [80, 97, 116, 104, 58, 97, 117, 100, 105, 111, 13, 10];
 
 async function handleMessage(message: MessageEvent, debug: boolean) {
-  const data = message.data;
+  // on Cloudflare, data is ArrayBuffer, on Node, data is Blob
+  const data = message.data as string | ArrayBuffer | Blob;
   switch (typeof data) {
     case "string": {
       const requestId = parseRequestId(data);
@@ -111,6 +112,11 @@ async function handleMessage(message: MessageEvent, debug: boolean) {
       return { requestId, data };
     }
     case "object": {
+      // type guard helper
+      function isBlob(data: Blob | ArrayBuffer): data is Blob {
+        return data.constructor.name === "Blob";
+      }
+
       const bufferData = new Uint8Array(
         // if run in node, data is a Blob, otherwise it's a ArrayBuffer
         /*
@@ -121,9 +127,7 @@ async function handleMessage(message: MessageEvent, debug: boolean) {
         On Cloudflare, data comes as ArrayBuffer, so even we want to read from stream,
         we cannot. So the 10ms CPU limit is a problem.
         */
-        data.constructor.name === "Blob"
-          ? await (data as unknown as Blob).arrayBuffer()
-          : data,
+        isBlob(data) ? await data.arrayBuffer() : data,
       );
       const contentIndex =
         indexOfUint8Array(bufferData, AUDIO_SEP) + AUDIO_SEP.length;
