@@ -16,30 +16,39 @@ const args = parseArgs({
   allowPositionals: false,
   strict: true,
 });
-
+/**
+ * @type {Record<string, import("esbuild").BuildOptions>}
+ */
 const TARGETS = {
   workerd: {
-    entry: "src/index.ts",
+    entryPoints: ["src/index.ts"],
     outdir: "dist-prebuild",
+    platform: "browser",
   },
   node: {
-    entry: "entries/node.ts",
+    entryPoints: ["entries/node.ts"],
     outdir: "dist-node",
+    platform: "node",
+    packages: "external",
   },
   vercel: {
-    entry: "src/index.ts",
+    entryPoints: ["src/index.ts"],
     outdir: "dist-prebuild",
+    platform: "node",
+    packages: "external",
   },
 };
+
 const target = args.values.target;
+if (!target) {
+  throw new Error("target is required");
+}
 const targetConfig = TARGETS[target];
 
-// build server
+// // build server
 await esbuild.build({
-  entryPoints: [targetConfig.entry],
-  outdir: targetConfig.outdir,
   bundle: true,
-  platform: "node",
   format: "esm",
   sourcemap: true,
+  ...targetConfig,
 });

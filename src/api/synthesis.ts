@@ -5,6 +5,7 @@ import { FORMAT_CONTENT_TYPE } from "../lib/tts/synthesis";
 import { Service } from "../lib/tts/synthesis";
 import retry, { RetryError } from "../lib/utils/retry";
 import buildSsml from "../lib/tts/buildSsml";
+import logger from "../lib/utils/logger";
 type Bindings = {
   TOKEN: string;
 };
@@ -67,7 +68,6 @@ synthesis.openapi(route, async (c) => {
     token,
   } = c.req.valid("query");
 
-  const debug = env(c).DEBUG === "1" || env(c).DEBUG === "true";
   const systemToken = env(c).TOKEN;
 
   if (systemToken !== "" && systemToken !== undefined) {
@@ -81,7 +81,6 @@ synthesis.openapi(route, async (c) => {
     throw new HTTPException(400, { message: `无效的音频格式：${format}` });
   }
   const ssml = buildSsml(text, { voiceName, pitch, rate, volume });
-  debug && console.debug("SSML:", ssml);
 
   // getting service instance, cloudflare workerd has limitation that each request
   // should not share IO objects, so we need to create a new instance for each request
@@ -93,10 +92,6 @@ synthesis.openapi(route, async (c) => {
     service = new Service();
   }
 
-  if (debug) {
-    service.debug = true;
-  }
-
   try {
     const result = await retry(
       async () => {
@@ -105,7 +100,7 @@ synthesis.openapi(route, async (c) => {
       },
       3,
       (index, error, abort) => {
-        console.warn(`Attempt ${index} failed：${error}`);
+        logger.error({ error }, `Attempt ${index} failed`);
         if (
           error instanceof Error &&
           error.message.includes("SSML is invalid")
