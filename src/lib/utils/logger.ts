@@ -1,9 +1,18 @@
 import pino from "pino";
 
+/**
+ * Since Vercel functions cannot use pino-pretty, we need to check if the node is running in a normal node environment.
+ */
+function isNormalNode():boolean {
+  const isNode = (typeof process !== 'undefined') && (process.release.name === 'node');
+  const isVercel = (typeof process !== 'undefined') && (process.env.VERCEL === '1');
+  return isNode && !isVercel;
+}
+
 const logger = pino({
-  transport: {
+  transport: isNormalNode() ? {
     target: "pino-pretty",
-  },
+  } : undefined,
   level:
     process.env.DEBUG === "1" || process.env.DEBUG === "true"
       ? "debug"
