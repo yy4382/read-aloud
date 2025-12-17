@@ -1,23 +1,11 @@
 {
-  "[json]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[jsonc]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "cSpell.words": [
-    "ifreetime",
-    "ireadnote",
-    "Legado",
-    "sourcereader",
-    "SSML",
-    "wxxxcxx"
-  ],
-  "typescript.tsdk": "node_modules/typescript/lib"
+	"cSpell.words": [
+		"ifreetime",
+		"ireadnote",
+		"Legado",
+		"sourcereader",
+		"SSML",
+		"wxxxcxx"
+	],
+	"typescript.tsdk": "node_modules/typescript/lib"
 }
