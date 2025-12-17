@@ -24,6 +24,7 @@ const TARGETS = {
     entryPoints: ["src/index.ts"],
     outdir: "dist-prebuild",
     platform: "browser",
+    external: ["node:*"],
   },
   node: {
     entryPoints: ["entries/node.ts"],

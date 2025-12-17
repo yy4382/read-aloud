@@ -1,5 +1,9 @@
+import { connect, type IsomorphicWebSocket } from "../isomorphic-ws";
 import logger from "../utils/logger";
 import type * as pino from "pino";
+import { getURLAndHeaders } from "./urlHeader";
+
+const WS_OPEN = 1;
 
 export const FORMAT_CONTENT_TYPE = new Map([
   ["raw-16khz-16bit-mono-pcm", "audio/basic"],
@@ -103,9 +107,8 @@ function parseRequestId(data: string) {
 // Path:audio\r\n
 const AUDIO_SEP = [80, 97, 116, 104, 58, 97, 117, 100, 105, 111, 13, 10];
 
-async function handleMessage(message: MessageEvent) {
-  // on Cloudflare, data is ArrayBuffer, on Node, data is Blob
-  const data = message.data as string | ArrayBuffer | Blob;
+function handleMessage(message: { data: string | ArrayBuffer }) {
+  const data = message.data;
   switch (typeof data) {
     case "string": {
       const requestId = parseRequestId(data);
@@ -113,23 +116,7 @@ async function handleMessage(message: MessageEvent) {
       return { requestId, data };
     }
     case "object": {
-      // type guard helper
-      function isBlob(data: Blob | ArrayBuffer): data is Blob {
-        return data.constructor.name === "Blob";
-      }
-
-      const bufferData = new Uint8Array(
-        // if run in node, data is a Blob, otherwise it's a ArrayBuffer
-        /*
-        Calling arrayBuffer() is not optimal, maybe reading from stream is better,
-        but it actually not a big deal, since we don't have a strict performance requirement
-        when running on Node
-
-        On Cloudflare, data comes as ArrayBuffer, so even we want to read from stream,
-        we cannot. So the 10ms CPU limit is a problem.
-        */
-        isBlob(data) ? await data.arrayBuffer() : data,
-      );
+      const bufferData = new Uint8Array(data);
       const contentIndex =
         indexOfUint8Array(bufferData, AUDIO_SEP) + AUDIO_SEP.length;
       const headers = new TextDecoder("utf-8").decode(
@@ -147,49 +134,8 @@ async function handleMessage(message: MessageEvent) {
   }
 }
 
-function buf2hex(buffer: ArrayBuffer) {
-  return [...new Uint8Array(buffer)]
-    .map((x) => x.toString(16).padStart(2, "0"))
-    .join("");
-}
-
-// provided by and modified from @rexshao
-// https://github.com/yy4382/read-aloud/issues/4#issue-3048109976
-async function getURL() {
-  const connectionId = randomUUID().toLowerCase();
-  const TRUSTED_CLIENT_TOKEN = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
-  const WIN_EPOCH = 11644473600; // 秒，从Windows纪元到Unix纪元的偏移量
-  const S_TO_NS = BigInt(1e9);
-  const SEC_MS_GEC_VERSION = "1-131.0.2903.99";
-  async function generateSecMSGEC() {
-    const currentTimestampSeconds = Math.floor(Date.now() / 1000);
-
-    // 调整时间到最近的5分钟（300秒）边界
-    let adjustedSeconds = currentTimestampSeconds + WIN_EPOCH;
-    adjustedSeconds -= adjustedSeconds % 300;
-
-    // 将调整后的时间转换为Windows文件时间（十亿分之一纳秒单位）
-    const winFileTime = BigInt(adjustedSeconds) * (S_TO_NS / 100n);
-
-    // 构造待哈希的字符串
-    const hashInput = `${winFileTime.toString()}${TRUSTED_CLIENT_TOKEN}`;
-
-    // 计算SHA-256哈希并转为大写十六进制格式
-    const encoder = new TextEncoder();
-    const hashInputBuffer = encoder.encode(hashInput);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", hashInputBuffer);
-    const sha256Hash = buf2hex(hashBuffer);
-    // const sha256Hash = createHash("sha256").update(hashInput).digest("hex");
-
-    return sha256Hash.toUpperCase();
-  }
-
-  const url = `wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=${TRUSTED_CLIENT_TOKEN}&Sec-MS-GEC=${await generateSecMSGEC()}&Sec-MS-GEC-Version=${SEC_MS_GEC_VERSION}&ConnectionId=${connectionId}`;
-  return url;
-}
-
 export class Service {
-  private ws: WebSocket | null = null;
+  private ws: IsomorphicWebSocket | null = null;
 
   /**
    * The timer id to close the connection to microsoft server
@@ -214,9 +160,12 @@ export class Service {
   }
 
   private async connect(): Promise<void> {
-    const url = await getURL();
-    const ws = new WebSocket(url);
+    const [url, headers] = await getURLAndHeaders();
     logger.info("Starting websocket connection to Microsoft server...");
+
+    const ws = await connect({ url, headers });
+    this.ws = ws;
+    logger.info("Connected to Microsoft server");
 
     ws.addEventListener("close", (closeEvent) => {
       // 服务器会自动断开空闲超过30秒的连接
@@ -230,8 +179,13 @@ export class Service {
       logger.info(`Connection Closed： reason: ${reason} code: ${code}`);
     });
 
-    ws.addEventListener("message", async (message) => {
-      const { requestId, data } = await handleMessage(message);
+    ws.addEventListener("message", (message) => {
+      const result = handleMessage(message);
+      if (result == null) {
+        logger.debug("Received unrecognized message");
+        return;
+      }
+      const { requestId, data } = result;
       if (requestId == null) {
         logger.debug("Received unrecognized message");
         return;
@@ -247,31 +201,22 @@ export class Service {
       }
     });
 
-    return new Promise((resolve, reject) => {
-      ws.addEventListener("open", () => {
-        logger.info("Connected to Microsoft server");
-        this.ws = ws;
-        resolve();
-      });
-      ws.addEventListener("error", (error) => {
-        logger.error(`Connection failed: ${error}`);
-        if (this.ws) {
-          this.ws.close();
-          for (const [id, request] of this.requestMap) {
-            request.errorCallback(
-              new Error(`Connection failed：${id} ${error}`),
-            );
-          }
-        } else {
-          reject(`Connection failed： ${error}`);
+    ws.addEventListener("error", (event) => {
+      logger.error(`Connection error: ${event.message}`);
+      if (this.ws) {
+        this.ws.close();
+        for (const [id, request] of this.requestMap) {
+          request.errorCallback(
+            new Error(`Connection failed：${id} ${event.message}`),
+          );
         }
-      });
+      }
     });
   }
 
   public async convert(ssml: string, format: string) {
     let perfConnect: number | undefined = undefined;
-    if (this.ws == null || this.ws.readyState !== WebSocket.OPEN) {
+    if (this.ws == null || this.ws.readyState !== WS_OPEN) {
       const perfConnStart = performance.now();
       await this.connect();
       perfConnect = performance.now() - perfConnStart;
@@ -304,7 +249,7 @@ export class Service {
     // 设置定时器，超过10秒没有收到请求，主动断开连接
     logger.debug("Creating timeout timer for closing connection");
     this.timerId = setTimeout(() => {
-      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      if (this.ws && this.ws.readyState === WS_OPEN) {
         this.ws.close(1000);
         logger.debug("Connection Closed by client due to inactivity");
         this.timerId = undefined;

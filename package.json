@@ -24,11 +24,13 @@
     "hono": "^4.9.7",
     "pino": "^9.9.5",
     "pino-pretty": "^13.1.1",
+    "ws": "^8.18.3",
     "xast-util-to-xml": "^4.0.0",
     "xastscript": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "20.8.3",
+    "@types/ws": "^8.18.1",
     "@types/xast": "^2.0.4",
     "esbuild": "^0.25.9",
     "prettier": "^3.7.4",
