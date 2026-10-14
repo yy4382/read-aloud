@@ -3,9 +3,24 @@
 // https://github.com/rany2/edge-tts/issues/490#issuecomment-6144434032
 export const TRUSTED_CLIENT_TOKEN = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
 
+// The token version and User-Agent must advertise the same Edge build; bump them together.
+// related project commits:
+// https://github.com/rany2/edge-tts/commit/cb6715f38d3132c6a3df256fb2471018fcfdde0a
+// https://github.com/rany2/edge-tts/commit/8da91459c8160ca7bc1cdedc8f7f6fd2137fa946
+const CHROMIUM_FULL_VERSION = "143.0.3650.75";
+const CHROMIUM_MAJOR_VERSION = CHROMIUM_FULL_VERSION.split(".")[0];
+export const SEC_MS_GEC_VERSION = `2-${CHROMIUM_FULL_VERSION}`;
+export const EDGE_USER_AGENT = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${CHROMIUM_MAJOR_VERSION}.0.0.0 Safari/537.36 Edg/${CHROMIUM_MAJOR_VERSION}.0.0.0`;
+
 const WINDOWS_EPOCH_SECONDS = 11644473600;
 const TOKEN_WINDOW_SECONDS = 300;
 const FILETIME_TICKS_PER_SECOND = 10000000n;
+
+// CS64 multipliers, applied to the first (x) and second (y) word of each pair.
+const SWAP_X_FACTORS = [0xef0569fb, 0x76f50f34, 0xc3efea97] as const;
+const SWAP_Y_FACTORS = [0xc31713db, 0x1881ce3c, 0x35bd1ec9] as const;
+const STATE_X_FACTORS = [0xcf98b111, 0x87085b9f, 0x12ceb96d, 0x257e1d83];
+const STATE_Y_FACTORS = [0xa27416f5, 0xd38396ff, 0x7c932b89, 0xbfa49f69];
 
 const rotate16 = (value: number) => (value << 16) | (value >>> 16);
 const multiply = Math.imul; // Preserve the low 32 bits without float rounding.
@@ -50,26 +65,15 @@ function cs64Digest(data: Uint8Array, digest: Uint8Array): Uint8Array {
     const x = words.getUint32(offset, true);
     const y = words.getUint32(offset + 4, true);
 
-    let t = rotate16(
-      (multiply(rotate16(x), 0xef0569fb) + multiply(x, keyA)) | 0,
-    );
-    let q = multiply(t, 0x76f50f34);
-    swapSum = (swapSum + multiply(rotate16(q), 0xc3efea97) + q) | 0;
-    t = rotate16((multiply(rotate16(y), 0xc31713db) + multiply(y, keyB)) | 0);
-    q = multiply(t, 0x1881ce3c);
-    swapLast = (multiply(rotate16(q), 0x35bd1ec9) + q) | 0;
-    swapSum = (swapSum + swapLast) | 0;
+    // Word-swap chain: each word is mixed independently.
+    const swapX = swapMix(x, keyA, SWAP_X_FACTORS);
+    swapLast = swapMix(y, keyB, SWAP_Y_FACTORS);
+    swapSum = (swapSum + swapX + swapLast) | 0;
 
-    state = multiply((state + x) | 0, keyA);
-    for (const factor of [0xcf98b111, 0x87085b9f, 0x12ceb96d, 0x257e1d83]) {
-      state = multiply(rotate16(state), factor);
-    }
+    // Reversible chain: each word is folded into the running state.
+    state = stateMix((state + x) | 0, keyA, STATE_X_FACTORS);
     sum = (sum + state) | 0;
-    t = multiply((state + y) | 0, keyB);
-    t = multiply(rotate16(t), 0xa27416f5);
-    t = multiply(rotate16(t), 0xd38396ff);
-    t = multiply(rotate16(t), 0x7c932b89);
-    state = multiply(rotate16(t), 0xbfa49f69);
+    state = stateMix((state + y) | 0, keyB, STATE_Y_FACTORS);
     sum = (sum + state) | 0;
   }
 
@@ -78,4 +82,22 @@ function cs64Digest(data: Uint8Array, digest: Uint8Array): Uint8Array {
   result.setUint32(0, swapLast ^ state, true);
   result.setUint32(4, swapSum ^ sum, true);
   return cs64;
+}
+
+function swapMix(
+  word: number,
+  key: number,
+  [pre, mid, post]: readonly [number, number, number],
+): number {
+  const t = rotate16((multiply(rotate16(word), pre) + multiply(word, key)) | 0);
+  const q = multiply(t, mid);
+  return (multiply(rotate16(q), post) + q) | 0;
+}
+
+function stateMix(value: number, key: number, factors: number[]): number {
+  let state = multiply(value, key);
+  for (const factor of factors) {
+    state = multiply(rotate16(state), factor);
+  }
+  return state;
 }
