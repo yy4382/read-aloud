@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "test": "node --import tsx --test tests/*.test.ts",
     "prebuild:worker": "node build.js --target=workerd --debug",
     "dev:worker": "wrangler dev",
     "deploy": "wrangler deploy --minify --outdir=dist-worker",
