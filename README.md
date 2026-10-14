@@ -46,6 +46,8 @@ docker run -d --name read-aloud -p 3000:3000 -e TOKEN=YOUR_TOKEN yunfinibol/read
 
 TOKEN 类似于密码，如果设置，则只有拥有该令牌的请求才能使用该服务。
 
+> 自行部署时请确保宿主机的系统时间准确（建议开启 NTP 自动校时，Docker 容器使用的是宿主机时间）。连接微软服务所需的验证令牌是根据当前时间生成的，系统时间偏差几分钟以上就可能导致请求失败（403 错误）。
+
 更新 Docker 镜像：
 
 ```bash
